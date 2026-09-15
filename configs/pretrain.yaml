@@ -1,0 +1,91 @@
+# Full LARK. batch_size counts reactions; each produces two graph views.
+# Single GPU: 8 reactions = 16 views per optimizer step.
+data_root: ${DATA_ROOT}/pretrain
+molecule_db: ${DATA_ROOT}/pretrain/smiles.lmdb
+train_file: ${DATA_ROOT}/pretrain/train.csv
+test_file: ${DATA_ROOT}/pretrain/test.csv
+save_dir: ${RESULTS_ROOT}/pretrain
+run_name: lark
+protocol_version: dual_view_v1
+reaction_objective:
+  mode: bidirectional_single_side
+  corruption: random_atoms
+  eval_corruption: none
+  train_pair_mask: full_input_canvas
+  eval_pair_mask: full_input_canvas
+  pair_prior: none
+  local_canvas: true
+  deterministic_eval: true
+  augmentation_seed: 42
+gpu: 0
+seed: 42
+deterministic: false
+epochs: 1000
+early_stop_patience: 10
+early_stop_min_delta: 0.0
+batch_size: 8
+num_workers: 0
+validation:
+  mode: split_from_train
+  fraction: 0.05
+ddp_find_unused_parameters: true
+ddp_collect_fp_auc: false
+selection_metric: avg_rmat_loss
+selection_mode: min
+split_integrity:
+  enabled: true
+  deduplicate_within_splits: true
+  exclude_cross_split_overlap: true
+  cache_dir: ${RESULTS_ROOT}/split_manifests
+  group_by_input_side: true
+  input_group_identity: full_side
+  group_split_algorithm: sha256_ordered_prefix_v1
+tasks:
+  enabled: [mam, angle, torsion, fingerprint, r_matrix]
+lr: 1.0e-4
+weight_decay: 1.0e-5
+mask_prob: 0.15
+neighbor_mask_prob: 0.3
+leave_unmasked_prob: 0.0
+random_token_prob: 0.0
+be_matrix:
+  aromatic_mode: aromatic_1p5
+context:
+  enabled: true
+  column: unmapped_components
+  molecule_db: ${DATA_ROOT}/pretrain/unmapped_smiles.lmdb
+  max_components: 0
+  missing_policy: skip_component
+  mask_prob: 0.15
+condition:
+  enabled: false
+consistency:
+  enabled: true
+  projection_dim: 128
+model:
+  mol_embed_dim: 256
+  mol_num_kernel: 256
+  mol_num_heads: 16
+  mol_num_layers: 6
+  mol_hidden_size: 256
+  hg_embed_dim: 256
+  hg_num_heads: 16
+  hg_layers: 6
+  dropout: 0.1
+  r_matrix_use_be_pair_feature: false
+loss:
+  lambda_ctx: 1.0
+  lambda_cons: 0.1
+  context_mam_weight: 1.0
+  context_fp_weight: 1.0
+  mam_weight: 1.0
+  angle_weight: 1.0
+  torsion_weight: 1.0
+  fp_weight: 1.0
+  rmat_weight: 1.0
+  rmat_positive_weight: 10.0
+  rmat_negative_weight: 1.0
+  rmat_positive_threshold: 1.0e-4
+  rmat_metric_threshold: 0.5
+  rmat_upper_triangle: true
+  electron_conservation_weight: 0.0

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lark-chem"
+version = "0.1.0"
+description = "LARK: Chemical representation learning with bidirectional reaction pretraining"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "torch==2.8.0", "torch-geometric==2.7.0", "rdkit==2024.9.4",
+  "numpy==1.26.4", "pandas==2.3.3", "pyarrow==24.0.0",
+  "scikit-learn==1.8.0", "scipy==1.16.3", "networkx==3.6.1",
+  "lmdb==1.7.5", "loguru==0.7.3", "PyYAML==6.0.3",
+  "tqdm==4.67.1", "zstandard==0.24.0"
+]
+
+[project.optional-dependencies]
+logging = ["tensorboard==2.20.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

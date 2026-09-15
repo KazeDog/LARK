@@ -1,0 +1,37 @@
+# Example reaction classification; all encoder parameters are fine-tuned.
+data:
+  data_root: ${DATA_ROOT}/schneider
+  molecule_db: ${DATA_ROOT}/schneider/smiles.mdb
+  train_csv: ${DATA_ROOT}/schneider/train.csv
+  valid_csv: ${DATA_ROOT}/schneider/valid.csv
+  test_csv: ${DATA_ROOT}/schneider/test.csv
+  label_column: reaction_type
+save_dir: ${RESULTS_ROOT}/finetune
+run_name: schneider
+pretrain_path: ${RESULTS_ROOT}/pretrain/lark/best.pt
+freeze_pretrained: false
+gpu: 0
+seed: 42
+deterministic: false
+epochs: 100
+early_stop_patience: 30
+early_stop_min_delta: 1.0e-4
+batch_size: 16
+num_workers: 0
+samples_per_class: -1
+lr: 1.0e-4
+weight_decay: 1.0e-5
+reaction_repr_mode: center
+center_source: auto
+model:
+  backbone_type: hypergraph
+  mol_embed_dim: 256
+  mol_num_kernel: 256
+  mol_num_heads: 16
+  mol_num_layers: 6
+  mol_hidden_size: 256
+  hg_embed_dim: 256
+  hg_num_heads: 16
+  hg_layers: 6
+  head_hidden_dim: 256
+  dropout: 0.2
